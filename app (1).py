@@ -37,7 +37,7 @@ except Exception as e:
 # ---------------------------
 st.subheader("Please enter the model feature values")
 FEATURES = [
-    "Age",
+    "Age2",
     "Maximum_coronal_length",
     "Maximum_sagittal_length",
     "Retrosellar",
