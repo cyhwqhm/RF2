@@ -38,8 +38,8 @@ except Exception as e:
 st.subheader("Please enter the model feature values")
 FEATURES = [
     "Age2",
-    "Maximum_coronal_length",
-    "Maximum_sagittal_length",
+    "Maximum_coronal_length3",
+    "Maximum_sagittal_length4",
     "Retrosellar",
     "ICA",
     "KNOSP",
