@@ -37,14 +37,14 @@ except Exception as e:
 # ---------------------------
 st.subheader("Please enter the model feature values")
 FEATURES = [
-    "Age2",
-    "Maximum_coronal_length3",
-    "Maximum_sagittal_length4",
-    "Retrosellar",
-    "ICA",
-    "KNOSP",
-    "Sphenoid_sinus_pneumatization",
-    "Tumor_texture"
+    "Age(0-99)",
+    "Maximum_coronal_length(mm)",
+    "Maximum_sagittal_length(mm)",
+    "Retrosellar(No=0,Yes=1)",
+    "ICA(None=0,Left=1,Right=2,Both=3)",
+    "KNOSP(Grade=1,2,3,4)",
+    "Sphenoid_sinus_pneumatization(Grade=1,2,3,4,5,6)",
+    "Tumor_texture(Soft=0,Firm=1)"
 ]
 
 inputs = {}
