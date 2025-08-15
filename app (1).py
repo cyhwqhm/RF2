@@ -16,8 +16,8 @@ st.set_page_config(
     layout="centered",
 )
 
-st.title("🌲 Random Forest Predictor")
-st.caption("输入 8 个特征 → 预测概率 + SHAP 力图（基于 best_rf_model.pkl）")
+st.title("Postoperative Residual PitNETs Predictor")
+st.caption("Based on random forest model）")
 
 # ---------------------------
 # Load model
@@ -100,7 +100,7 @@ if st.button("Predict"):
     try:
         p = predict_probability(model, X)
         st.markdown(f"**Based on feature values, predicted possibility is {p*100:.2f}%**")
-        st.subheader("SHAP 力图")
+        st.subheader("SHAP force plot")
         render_shap_force(model, X)
     except Exception as e:
         st.error(f"预测或生成 SHAP 力图时出错：{e}")
