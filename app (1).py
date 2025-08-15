@@ -17,7 +17,7 @@ st.set_page_config(
 )
 
 st.title("Postoperative Residual PitNETs Predictor")
-st.caption("Based on random forest model）")
+st.caption("Based on random forest model")
 
 # ---------------------------
 # Load model
@@ -35,7 +35,7 @@ except Exception as e:
 # ---------------------------
 # Inputs
 # ---------------------------
-st.subheader("请输入模型特征值")
+st.subheader("Please enter the model feature values")
 FEATURES = [
     "Age",
     "Maximum_coronal_length",
