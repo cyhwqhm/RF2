@@ -36,10 +36,8 @@ except Exception as e:
 TARGET_BASE_VALUE = 0.27083
 
 # ---------------------------
-# Inputs
+# Input features
 # ---------------------------
-st.subheader("Please enter the model feature values")
-
 FEATURES = [
     "Age(0-99)",
     "Maximum_coronal_length(mm)",
@@ -50,6 +48,8 @@ FEATURES = [
     "Sphenoid_sinus_pneumatization(Grade=1,2,3,4,5,6)",
     "Tumor_texture(Soft=0,Firm=1)"
 ]
+
+st.subheader("Please enter the model feature values")
 
 inputs = {}
 cols = st.columns(2)
@@ -67,7 +67,7 @@ for i, name in enumerate(FEATURES):
 # ---------------------------
 def get_positive_class_index(mdl):
     """
-    获取二分类模型中阳性类别 1 对应的列索引。
+    获取二分类模型中阳性类别 1 对应的索引。
     如果模型没有 classes_ 属性，则默认取第 2 列。
     """
     if hasattr(mdl, "classes_"):
@@ -98,10 +98,10 @@ def predict_probability(mdl, X_df):
 
 def extract_positive_class_shap_values(explainer, shap_values, pos_idx=1):
     """
-    兼容不同 SHAP 版本的输出格式。
+    兼容不同版本 SHAP 的输出格式。
     """
 
-    # 旧版 SHAP: list[class0, class1]
+    # 旧版 SHAP: shap_values 是 list[class0, class1]
     if isinstance(shap_values, list):
         sv = shap_values[pos_idx]
 
@@ -112,7 +112,7 @@ def extract_positive_class_shap_values(explainer, shap_values, pos_idx=1):
 
         return np.array(sv), float(base_value)
 
-    # 新版 SHAP: shape = (n_samples, n_features, n_classes)
+    # 新版 SHAP: shap_values shape = (n_samples, n_features, n_classes)
     if isinstance(shap_values, np.ndarray) and shap_values.ndim == 3:
         sv = shap_values[:, :, pos_idx]
 
@@ -123,7 +123,7 @@ def extract_positive_class_shap_values(explainer, shap_values, pos_idx=1):
 
         return np.array(sv), float(base_value)
 
-    # 其他情况: shape = (n_samples, n_features)
+    # 其他情况: shap_values shape = (n_samples, n_features)
     sv = np.array(shap_values)
 
     if isinstance(explainer.expected_value, (list, np.ndarray)):
@@ -161,7 +161,7 @@ def adjust_shap_to_fixed_base_value(sv, original_base_value, target_base_value):
 def render_shap_force(mdl, X_df):
     """
     生成 SHAP force plot。
-    仅显示力图，不显示下方特征值小字。
+    下方同时显示变量名称和变量取值。
     """
 
     explainer = shap.TreeExplainer(mdl)
@@ -181,20 +181,37 @@ def render_shap_force(mdl, X_df):
         target_base_value=TARGET_BASE_VALUE
     )
 
-    # 关键修改：
-    # 不传入 X_df.iloc[0, :]，即可去掉 force plot 下方的特征小字
+    # 关键：
+    # 传入 X_df.iloc[0, :] 后，force plot 会显示：
+    # 变量名称 = 当前输入取值
     force = shap.force_plot(
         TARGET_BASE_VALUE,
         sv_adjusted[0, :],
-        matplotlib=False
+        X_df.iloc[0, :],
+        feature_names=FEATURES,
+        matplotlib=False,
+        contribution_threshold=0.0
     )
 
     html = f"""
-    <head>{shap.getjs()}</head>
-    <body>{force.html()}</body>
+    <head>
+        {shap.getjs()}
+        <style>
+            body {{
+                margin: 0;
+                padding: 0;
+                overflow-x: auto;
+                overflow-y: hidden;
+            }}
+        </style>
+    </head>
+
+    <body>
+        {force.html()}
+    </body>
     """
 
-    components.html(html, height=260)
+    components.html(html, height=360)
 
 
 # ---------------------------
@@ -203,7 +220,7 @@ def render_shap_force(mdl, X_df):
 if st.button("Predict"):
     X = pd.DataFrame([inputs])
 
-    # 保证特征顺序与训练时一致
+    # 保证输入特征顺序与训练模型时一致
     X = X[FEATURES]
 
     try:
